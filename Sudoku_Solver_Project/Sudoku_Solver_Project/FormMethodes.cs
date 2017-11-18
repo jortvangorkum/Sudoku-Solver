@@ -31,6 +31,21 @@ namespace Sudoku
             return Box;
         }
 
+        public TextBox MakenTextBox(string waarde, int x, int y, int w, int h, Panel paneel, int lettergroote)
+        {
+            TextBox Box;
+            Box = new TextBox();
+            Box.Location = new Point(x, y);
+            Box.Size = new Size(w, h);
+            Box.Text = waarde;
+            Box.Font = new Font(Box.Font.FontFamily, lettergroote);
+            Box.TextAlign = HorizontalAlignment.Center;
+            Box.AutoSize = false;
+
+            paneel.Controls.Add(Box);
+            return Box;
+        }
+
         //Methode om Buttons aan te maken.
         public Button MakenButton(string naam, int x, int y, int w, int h)
         {
