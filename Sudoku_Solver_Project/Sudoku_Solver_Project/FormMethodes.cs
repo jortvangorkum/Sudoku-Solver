@@ -40,7 +40,9 @@ namespace Sudoku
             Box.Text = waarde;
             Box.Font = new Font(Box.Font.FontFamily, lettergroote);
             Box.TextAlign = HorizontalAlignment.Center;
+            Box.BorderStyle = BorderStyle.None;
             Box.AutoSize = false;
+            Box.MaxLength = 1;
 
             paneel.Controls.Add(Box);
             return Box;
@@ -82,6 +84,18 @@ namespace Sudoku
             paneel.Size = new Size(w, h);
             Controls.Add(paneel);
             return paneel;
+        }
+
+        public NumericUpDown MakenNumericUpDown(int x, int y, int w, int h, int min, int max, Panel paneel, int lettergrootte)
+        {
+            NumericUpDown numericUpDown;
+            numericUpDown = new NumericUpDown();
+            numericUpDown.Location = new Point(x, y);
+            numericUpDown.Size = new Size(w, h);
+            numericUpDown.Maximum = max;
+            numericUpDown.Minimum = min;
+            paneel.Controls.Add(numericUpDown);
+            return numericUpDown;
         }
     }
 }

@@ -6,11 +6,11 @@ using System.Windows.Forms;
 
 namespace Sudoku
 {
-    class Solver
+    public class Solver
     {
         int LinesX, LinesY;
         int teller = 0;
-        int[,] sudokuBoard;
+        public int[,] sudokuBoard;
         List<LegeBox> LegeBoxen;
 
         public Solver(int linesX, int linesY)
@@ -21,8 +21,10 @@ namespace Sudoku
             this.LegeBoxen = new List<LegeBox>();
         }
 
-        public void fillArrayWithNumbers(TextBox[,] TextBoxArray)
+        public bool fillArrayWithNumbers(TextBox[,] TextBoxArray)
         {
+            bool res = true;
+
             for (int t = 0; t <= LinesX - 1; t++)
             {
                 for (int n = 0; n <= LinesY - 1; n++)
@@ -40,32 +42,48 @@ namespace Sudoku
                         catch
                         {
                             MessageBox.Show("Vul alleen getallen in.");
+                            return res = false;
                         }
                     }
                 }
             }
+            return res;
         }
 
 
         public void Oplossen()
         {
-            
-
-            if (LegeBoxen.Count == 0)
+            if (teller == LegeBoxen.Count || teller < 0)
             {
                 return;
             }
             else
             {
                 LegeBox legebox = LegeBoxen[teller];
-                if(VoldoetAanEisen(legebox.X, legebox.Y, legebox.MogelijkeWaarden.First(), legebox.Vlak))
+                MogelijkeWaardenAflopen(legebox);
+            }
+        }
+
+        public void MogelijkeWaardenAflopen(LegeBox legebox)
+        {
+            if(legebox.MogelijkeWaarden.Count == 0)
+            {
+                teller--;
+                Oplossen();
+            }
+            else
+            {
+                int mogelijkewaarde = legebox.MogelijkeWaarden.First();
+                legebox.MogelijkeWaarden.Remove(mogelijkewaarde);
+                if (VoldoetAanEisen(legebox.X, legebox.Y, mogelijkewaarde, legebox.Vlak))
                 {
+                    this.sudokuBoard[legebox.X, legebox.Y] = mogelijkewaarde;
                     teller++;
                     Oplossen();
                 }
                 else
                 {
-                    return;
+                    MogelijkeWaardenAflopen(legebox);
                 }
             }
         }
@@ -73,7 +91,7 @@ namespace Sudoku
         public bool VoldoetAanEisen(int x, int y, int mogelijkewaarde, Point vlak)
         {
             bool res = false;
-            if(CheckVerticaal(x, y, mogelijkewaarde) && CheckHorizontaal(x, y, mogelijkewaarde))
+            if(CheckVerticaal(x, y, mogelijkewaarde) && CheckHorizontaal(x, y, mogelijkewaarde) && CheckVlak(x, y, mogelijkewaarde, vlak))
             {
                 res = true;
             }
@@ -119,7 +137,7 @@ namespace Sudoku
             bool res = false;
             for (int t = vlak.X * 3 - 3; t < vlak.X * 3; t++)
             {
-                for (int n = vlak.X * 3 - 3; n < vlak.Y * 3; n++)
+                for (int n = vlak.Y * 3 - 3; n < vlak.Y * 3; n++)
                 {
                     if(sudokuBoard[t, n].Equals(mogelijkewaarde))
                     {
