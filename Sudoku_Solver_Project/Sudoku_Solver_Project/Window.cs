@@ -14,6 +14,7 @@ namespace Sudoku
         {
             Button Solve = MakenButton("Solve", 600, 10, 80, 30);
             Button Reset = MakenButton("Reset", 600, 50, 80, 30);
+            Button Voorbeeld = MakenButton("Voorbeeld", 600, 90, 80, 30);
             Panel paneel = MakenPanel(10, 10, LinesX * BoxSize + 1, LinesY * BoxSize + 1);
             fillGridWithTextBox(paneel);
 
@@ -26,6 +27,7 @@ namespace Sudoku
 
             Solve.Click += SolveKlik;
             Reset.Click += ResetKlik;
+            Voorbeeld.Click += VoorbeeldKlik;
         }
 
         public void Teken(object sender, PaintEventArgs pea)
@@ -53,6 +55,38 @@ namespace Sudoku
             Solver solver = new Solver(LinesX, LinesY);
             this.solver = solver;
             cleanSudokuBoard();
+        }
+
+        public void VoorbeeldKlik(object sender, EventArgs ea)
+        {
+            CijferToevoegenTextBox(0, 1, 5);
+            CijferToevoegenTextBox(0, 3, 6);
+            CijferToevoegenTextBox(0, 7, 4);
+            CijferToevoegenTextBox(1, 0, 4);
+            CijferToevoegenTextBox(1, 2, 1);
+            CijferToevoegenTextBox(1, 4, 2);
+            CijferToevoegenTextBox(1, 6, 7);
+            CijferToevoegenTextBox(1, 8, 9);
+            CijferToevoegenTextBox(2, 1, 9);
+            CijferToevoegenTextBox(2, 2, 8);
+            CijferToevoegenTextBox(2, 7, 3);
+            CijferToevoegenTextBox(3, 0, 9);
+            CijferToevoegenTextBox(3, 5, 2);
+            CijferToevoegenTextBox(4, 1, 8);
+            CijferToevoegenTextBox(4, 7, 2);
+            CijferToevoegenTextBox(5, 3, 3);
+            CijferToevoegenTextBox(5, 8, 1);
+            CijferToevoegenTextBox(6, 1, 3);
+            CijferToevoegenTextBox(6, 6, 4);
+            CijferToevoegenTextBox(6, 7, 9);
+            CijferToevoegenTextBox(7, 0, 7);
+            CijferToevoegenTextBox(7, 2, 9);
+            CijferToevoegenTextBox(7, 4, 5);
+            CijferToevoegenTextBox(7, 6, 6);
+            CijferToevoegenTextBox(7, 8, 3);
+            CijferToevoegenTextBox(8, 1, 2);
+            CijferToevoegenTextBox(8, 5, 9);
+            CijferToevoegenTextBox(8, 7, 8);
         }
 
         public void tekenGrid(Graphics gr)
@@ -114,6 +148,11 @@ namespace Sudoku
                     this.TextBoxArray[t, n].Text = null;
                 }
             }
+        }
+
+        private void CijferToevoegenTextBox(int x, int y, int waarde)
+        {
+            TextBoxArray[x, y].Text = waarde.ToString();
         }
     }
 }
