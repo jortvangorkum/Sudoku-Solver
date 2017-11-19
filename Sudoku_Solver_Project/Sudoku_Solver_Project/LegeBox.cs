@@ -1,16 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace Sudoku
 {
     public class LegeBox
     {
-        int X, Y;
-        ICollection<int> MogelijkeWaarden;
+        public int X, Y;
+        public Point Vlak;
+        public ICollection<int> MogelijkeWaarden;
 
-        public LegeBox(int x, int y)
+        public LegeBox(int x, int y, Point vlak)
         {
             this.X = x;
             this.Y = y;
+            this.Vlak = vlak;
             MogelijkeWaarden = new List<int>();
             MogelijkeWaardenToevoegen();
         }
