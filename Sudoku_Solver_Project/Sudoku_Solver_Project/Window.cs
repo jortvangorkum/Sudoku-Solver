@@ -7,7 +7,7 @@ namespace Sudoku
     public class Window : FormMethodes
     {
         const int LinesX = 9, LinesY = 9, BoxSize = 60;
-        TextBox[,] TextBoxen = new TextBox[LinesX, LinesY];
+        TextBox[,] TextBoxArray = new TextBox[LinesX, LinesY];
 
         public Window()
         {
@@ -37,7 +37,9 @@ namespace Sudoku
 
         public void SolveKlik(object sender, EventArgs ea)
         {
-            Solver solver = new Solver();
+            Solver solver = new Solver(LinesX, LinesY);
+            solver.fillArrayWithNumbers(TextBoxArray);
+            solver.Oplossen();
         }
 
         public void tekenGrid(Graphics gr)
@@ -48,7 +50,6 @@ namespace Sudoku
             {
                 for (int n = 0; n <= LinesY; n++)
                 {
-                    //De breedte en hoogte van de vakjes is gelijk aan de diameter van de stenen.
                     gr.DrawLine(pBlack, 0, BoxSize * n, LinesX * BoxSize, BoxSize * n);
                     gr.DrawLine(pBlack, BoxSize * t, 0, BoxSize * t, LinesY * BoxSize);
                 }
@@ -61,7 +62,7 @@ namespace Sudoku
             {
                 for(int n = 0; n <= LinesY - 1; n++)
                 {
-                    this.TextBoxen[t, n] = MakenTextBox("", BoxSize * t, BoxSize * n, BoxSize, BoxSize, paneel, BoxSize - 20);
+                    this.TextBoxArray[t, n] = MakenTextBox("", BoxSize * t, BoxSize * n, BoxSize, BoxSize, paneel, BoxSize - 20);
                 }
             }
         }

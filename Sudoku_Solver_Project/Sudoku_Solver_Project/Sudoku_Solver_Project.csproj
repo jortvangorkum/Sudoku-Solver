@@ -38,6 +38,7 @@
     <Compile Include="FormMethodes.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="LegeBox.cs" />
     <Compile Include="Window.cs">
       <SubType>Form</SubType>
     </Compile>
