@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Drawing;
+using System.IO;
 
 namespace Sudoku
 {
@@ -9,12 +10,15 @@ namespace Sudoku
         const int LinesX = 9, LinesY = 9, BoxSize = 60, VlakSize = 3 * BoxSize, TextBoxSize = BoxSize - 5;
         TextBox[,] TextBoxArray = new TextBox[LinesX, LinesY];
         Solver solver = new Solver(LinesX, LinesY);
+        String fileName;
 
         public Window()
         {
             Button Solve = MakenButton("Solve", 600, 10, 80, 30);
             Button Reset = MakenButton("Reset", 600, 50, 80, 30);
             Button Voorbeeld = MakenButton("Voorbeeld", 600, 90, 80, 30);
+            Button Open = MakenButton("Open", 600, 130, 80, 30);
+            Button Opslaan = MakenButton("Opslaan", 600, 170, 80, 30);
             Panel paneel = MakenPanel(10, 10, LinesX * BoxSize + 1, LinesY * BoxSize + 1);
             fillGridWithTextBox(paneel);
 
@@ -28,6 +32,8 @@ namespace Sudoku
             Solve.Click += SolveKlik;
             Reset.Click += ResetKlik;
             Voorbeeld.Click += VoorbeeldKlik;
+            Open.Click += OpenKlik;
+            Opslaan.Click += OpslaanKlik;
         }
 
         public void Teken(object sender, PaintEventArgs pea)
@@ -87,6 +93,31 @@ namespace Sudoku
             CijferToevoegenTextBox(8, 1, 2);
             CijferToevoegenTextBox(8, 5, 9);
             CijferToevoegenTextBox(8, 7, 8);
+        }
+
+        private void OpenKlik(object sender, EventArgs ea)
+        {
+            OpenFileDialog dialoog = new OpenFileDialog();
+            dialoog.Title = "Open...";
+            dialoog.Filter = "Tekst|*.txt";
+            if (dialoog.ShowDialog() == DialogResult.OK)
+            {
+                this.fileName = dialoog.FileName;
+                this.Lees();
+                this.Refresh();
+            }
+        }
+
+        private void OpslaanKlik(object sender, EventArgs ea)
+        {
+            SaveFileDialog dialoog = new SaveFileDialog();
+            dialoog.Filter = "Tekst|*.txt";
+            dialoog.Title = "Opslaan als...";
+            if (dialoog.ShowDialog() == DialogResult.OK)
+            {
+                this.fileName = dialoog.FileName;
+                this.Schrijven();
+            }
         }
 
         public void tekenGrid(Graphics gr)
@@ -156,6 +187,57 @@ namespace Sudoku
         private void CijferToevoegenTextBox(int x, int y, int waarde)
         {
             TextBoxArray[x, y].Text = waarde.ToString();
+        }
+
+        private void Lees()
+        {
+            int teller = 0;
+            foreach (string regel in File.ReadAllLines(fileName))
+            {
+                string[] obj = regel.Split(' ');
+
+                try
+                {
+                    for (int t = 0; t < 9; t++)
+                    {
+                        if(obj[t] != "0")
+                        {
+                            TextBoxArray[teller, t].Text = obj[t];
+                        }
+                    }
+                    teller++;
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+
+            }
+        }
+
+        private void Schrijven()
+        {
+            string regel = "";
+
+            using (StreamWriter textfile = new StreamWriter(this.fileName))
+            {
+                for (int t = 0; t < 9; t++)
+                {
+                    for (int n = 0; n < 9; n++)   
+                    {
+                        if(TextBoxArray[t, n].Text != "")
+                        {
+                            regel += TextBoxArray[t, n].Text + " ";
+                        }
+                        else
+                        {
+                            regel += "0 ";
+                        }
+                    }
+                    textfile.WriteLine(regel);
+                    regel = "";
+                }
+            }
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Sudoku
 {
     public class Solver
     {
-        int LinesX, LinesY;
+        int LinesX, LinesY, garbageteller;
         public int[,] sudokuBoard;
         List<LegeBox> LegeBoxen;
 
@@ -69,6 +69,7 @@ namespace Sudoku
             {
                 ResetMogelijkeWaarde(teller);
                 ResetSudokuBoard(teller);
+                //GarbageCollector();
                 Oplossen(--teller);
             }
             else
@@ -177,6 +178,18 @@ namespace Sudoku
             {
                 LegeBox legebox = LegeBoxen[t];
                 sudokuBoard[legebox.X, legebox.Y] = 0;
+            }
+        }
+
+        public void GarbageCollector ()
+        {
+            if(garbageteller >= 3000)
+            {
+                GC.Collect();
+            }
+            else
+            {
+                garbageteller++;     
             }
         }
     }
