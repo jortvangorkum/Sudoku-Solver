@@ -2,13 +2,14 @@
 using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
+using System.Threading;
 
 namespace Sudoku
 {
     public class Window : FormMethodes
     {
         const int LinesX = 9, LinesY = 9, BoxSize = 60, VlakSize = 3 * BoxSize, TextBoxSize = BoxSize - 5;
-        TextBox[,] TextBoxArray = new TextBox[LinesX, LinesY];
+        public TextBox[,] TextBoxArray = new TextBox[LinesX, LinesY];
         Solver solver = new Solver(LinesX, LinesY);
         String fileName;
 
@@ -49,9 +50,11 @@ namespace Sudoku
 
         public void SolveKlik(object sender, EventArgs ea)
         {
-            if(this.solver.fillArrayWithNumbers(TextBoxArray))
+            this.solver.MeestVoorkomendeWaarde(TextBoxArray);
+
+            if (this.solver.fillArrayWithNumbers(TextBoxArray))
             {
-                this.solver.Oplossen(0);
+                this.solver.thread.Start();
                 tekenSudokuBoard(this.solver);
             }
         }
@@ -161,11 +164,16 @@ namespace Sudoku
 
         public void tekenSudokuBoard(Solver solver)
         {
+            while(solver.thread.IsAlive)
+            {
+
+            }
+
             for (int t = 0; t <= LinesX - 1; t++)
             {
                 for (int n = 0; n <= LinesY - 1; n++)
                 {
-                    if(solver.sudokuBoard[t, n] != 0)
+                    if (solver.sudokuBoard[t, n] != 0)
                     {
                         this.TextBoxArray[t, n].Text = solver.sudokuBoard[t, n].ToString();
                     }

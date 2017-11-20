@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Sudoku
 {
     public class Solver
     {
-        int LinesX, LinesY, garbageteller;
+        int LinesX, LinesY;
         public int[,] sudokuBoard;
         List<LegeBox> LegeBoxen;
+        public Thread thread;
+        int garbageteller;
+        private int[] MeestVoorkomendeWaarden, SorteerdeMeestVoorkomendeWaarden;
 
         public Solver(int linesX, int linesY)
         {
@@ -18,6 +22,9 @@ namespace Sudoku
             this.LinesX = linesX;
             this.LinesY = linesY;
             this.LegeBoxen = new List<LegeBox>();
+            this.thread = new Thread(() => Oplossen(0), 1000000000);
+            this.MeestVoorkomendeWaarden = new int[9];
+            this.SorteerdeMeestVoorkomendeWaarden = new int[9];
         }
 
         public bool fillArrayWithNumbers(TextBox[,] TextBoxArray)
@@ -30,7 +37,7 @@ namespace Sudoku
                 {
                     if(TextBoxArray[t, n].Text == "")
                     {
-                        LegeBoxen.Add(new LegeBox(t, n, WelkeVlak(t, n)));
+                        LegeBoxen.Add(new LegeBox(t, n, WelkeVlak(t, n), SorteerdeMeestVoorkomendeWaarden.ToList()));
                     }
                     else
                     {
@@ -65,11 +72,12 @@ namespace Sudoku
 
         public void MogelijkeWaardenAflopen(LegeBox legebox, int teller)
         {
-            if(legebox.MogelijkeWaarden.Count == 0)
+
+            if (legebox.MogelijkeWaarden.Count == 0)
             {
                 ResetMogelijkeWaarde(teller);
                 ResetSudokuBoard(teller);
-                //GarbageCollector();
+                GarbageCollector();
                 Oplossen(--teller);
             }
             else
@@ -164,10 +172,11 @@ namespace Sudoku
         {
             for (int t = teller; t < LegeBoxen.Count(); t++)
             {
-                LegeBoxen[t].MogelijkeWaarden.Clear();
-                for (int n = 1; n <= 9; n++)
+                LegeBoxen[t].MogelijkeWaarden = null;
+                LegeBoxen[t].MogelijkeWaarden = new List<int>();
+                for (int n = 0; n < 9; n++)
                 {
-                    LegeBoxen[t].MogelijkeWaarden.Add(n);
+                    LegeBoxen[t].MogelijkeWaarden.Add(SorteerdeMeestVoorkomendeWaarden[n]);
                 }
             }
         }
@@ -181,15 +190,42 @@ namespace Sudoku
             }
         }
 
-        public void GarbageCollector ()
+        private void GarbageCollector ()
         {
-            if(garbageteller >= 3000)
+            if(garbageteller >= 1000)
             {
                 GC.Collect();
+                garbageteller = 0;
             }
             else
             {
-                garbageteller++;     
+                garbageteller++;
+            }
+        }
+
+        public void MeestVoorkomendeWaarde(TextBox[,] TextBoxArray)
+        {
+            for (int t = 0; t < 9; t++)
+            {
+                for (int n = 0; n < 9; n++)
+                {
+                    if (TextBoxArray[t, n].Text != "")
+                    {
+                        MeestVoorkomendeWaarden[int.Parse(TextBoxArray[t, n].Text) - 1] += 1;
+                    }
+                }
+            }
+            MeestVoorkomendeWaardeSorteren();
+        }
+
+        public void MeestVoorkomendeWaardeSorteren()
+        {
+            for (int t = 0; t < 9; t++)
+            {
+                int maxValue = MeestVoorkomendeWaarden.Max();
+                int maxIndex = MeestVoorkomendeWaarden.ToList().IndexOf(maxValue);
+                MeestVoorkomendeWaarden[maxIndex] = -1;
+                this.SorteerdeMeestVoorkomendeWaarden[t] = maxIndex + 1;
             }
         }
     }

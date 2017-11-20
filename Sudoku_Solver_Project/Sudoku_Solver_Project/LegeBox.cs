@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace Sudoku
 {
@@ -8,22 +10,14 @@ namespace Sudoku
         public int X, Y;
         public Point Vlak;
         public ICollection<int> MogelijkeWaarden;
+       
 
-        public LegeBox(int x, int y, Point vlak)
+        public LegeBox(int x, int y, Point vlak, ICollection<int> mogelijkewaarden)
         {
             this.X = x;
             this.Y = y;
             this.Vlak = vlak;
-            MogelijkeWaarden = new List<int>();
-            MogelijkeWaardenToevoegen();
-        }
-
-        private void MogelijkeWaardenToevoegen()
-        {
-            for (int t = 1; t <= 9; t++)
-            {
-                this.MogelijkeWaarden.Add(t);
-            }
+            MogelijkeWaarden = mogelijkewaarden;
         }
     }
 }
