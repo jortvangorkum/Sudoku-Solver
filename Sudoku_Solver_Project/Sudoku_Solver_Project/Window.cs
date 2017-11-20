@@ -45,7 +45,7 @@ namespace Sudoku
         {
             if(this.solver.fillArrayWithNumbers(TextBoxArray))
             {
-                this.solver.Oplossen();
+                this.solver.Oplossen(0);
                 tekenSudokuBoard(this.solver);
             }
         }
@@ -134,7 +134,10 @@ namespace Sudoku
             {
                 for (int n = 0; n <= LinesY - 1; n++)
                 {
-                    this.TextBoxArray[t, n].Text = solver.sudokuBoard[t, n].ToString();
+                    if(solver.sudokuBoard[t, n] != 0)
+                    {
+                        this.TextBoxArray[t, n].Text = solver.sudokuBoard[t, n].ToString();
+                    }
                 }
             }
         }

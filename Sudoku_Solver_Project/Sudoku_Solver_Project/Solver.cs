@@ -9,7 +9,6 @@ namespace Sudoku
     public class Solver
     {
         int LinesX, LinesY;
-        int teller = 0;
         public int[,] sudokuBoard;
         List<LegeBox> LegeBoxen;
 
@@ -51,7 +50,7 @@ namespace Sudoku
         }
 
 
-        public void Oplossen()
+        public void Oplossen(int teller)
         {
             if (teller == LegeBoxen.Count || teller < 0)
             {
@@ -60,16 +59,17 @@ namespace Sudoku
             else
             {
                 LegeBox legebox = LegeBoxen[teller];
-                MogelijkeWaardenAflopen(legebox);
+                MogelijkeWaardenAflopen(legebox, teller);
             }
         }
 
-        public void MogelijkeWaardenAflopen(LegeBox legebox)
+        public void MogelijkeWaardenAflopen(LegeBox legebox, int teller)
         {
             if(legebox.MogelijkeWaarden.Count == 0)
             {
-                teller--;
-                Oplossen();
+                ResetMogelijkeWaarde(teller);
+                ResetSudokuBoard(teller);
+                Oplossen(--teller);
             }
             else
             {
@@ -78,12 +78,11 @@ namespace Sudoku
                 if (VoldoetAanEisen(legebox.X, legebox.Y, mogelijkewaarde, legebox.Vlak))
                 {
                     this.sudokuBoard[legebox.X, legebox.Y] = mogelijkewaarde;
-                    teller++;
-                    Oplossen();
+                    Oplossen(++teller);
                 }
                 else
                 {
-                    MogelijkeWaardenAflopen(legebox);
+                    MogelijkeWaardenAflopen(legebox, teller);
                 }
             }
         }
@@ -158,6 +157,27 @@ namespace Sudoku
             res.X = x / 3 + 1;
             res.Y = y / 3 + 1;
             return res;
+        }
+
+        public void ResetMogelijkeWaarde(int teller)
+        {
+            for (int t = teller; t < LegeBoxen.Count(); t++)
+            {
+                LegeBoxen[t].MogelijkeWaarden.Clear();
+                for (int n = 1; n <= 9; n++)
+                {
+                    LegeBoxen[t].MogelijkeWaarden.Add(n);
+                }
+            }
+        }
+
+        public void ResetSudokuBoard (int teller)
+        {
+            for (int t = teller; t < LegeBoxen.Count(); t++)
+            {
+                LegeBox legebox = LegeBoxen[t];
+                sudokuBoard[legebox.X, legebox.Y] = 0;
+            }
         }
     }
 }
