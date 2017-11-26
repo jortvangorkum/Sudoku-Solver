@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Sudoku
 {
@@ -12,6 +13,7 @@ namespace Sudoku
         public TextBox[,] TextBoxArray = new TextBox[LinesX, LinesY];
         Solver solver = new Solver(LinesX, LinesY);
         String fileName;
+        Stopwatch stopwatch = new Stopwatch();
 
         public Window()
         {
@@ -35,6 +37,8 @@ namespace Sudoku
             Voorbeeld.Click += VoorbeeldKlik;
             Open.Click += OpenKlik;
             Opslaan.Click += OpslaanKlik;
+
+
         }
 
         public void Teken(object sender, PaintEventArgs pea)
@@ -54,6 +58,7 @@ namespace Sudoku
 
             if (this.solver.fillArrayWithNumbers(TextBoxArray))
             {
+                stopwatch.Start();
                 this.solver.thread.Start();
                 tekenSudokuBoard(this.solver);
             }
@@ -169,6 +174,8 @@ namespace Sudoku
 
             }
 
+            stopwatch.Stop();
+
             for (int t = 0; t <= LinesX - 1; t++)
             {
                 for (int n = 0; n <= LinesY - 1; n++)
@@ -179,6 +186,9 @@ namespace Sudoku
                     }
                 }
             }
+
+            Debug.WriteLine("Time elapsed: {0}", stopwatch.Elapsed);
+            stopwatch.Reset();
         }
 
         public void cleanSudokuBoard()
