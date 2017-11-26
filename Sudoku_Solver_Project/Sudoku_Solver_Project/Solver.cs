@@ -9,11 +9,17 @@ namespace Sudoku
 {
     public class Solver
     {
+        //LinesX aantal vakjes in de x-richting. LinesY aantal vakjes in de y-richting.
         int LinesX, LinesY;
+        //Een int array die de waarde van de sudokuBoard onthoudt.
         public int[,] sudokuBoard;
+        //Een list van legeboxen waarin we de mogelijkewaarde kunnen uitproberen.
         List<LegeBox> LegeBoxen;
+        //Een thread wordt aangemaakt om de oplossing in te runnen.
         public Thread thread;
+        //Een teller die bijhoudt hoe vaak er wordt gereset.
         int garbageteller;
+        //Twee int arrays. MeestVoorkomendeWaarden heeft geteld hoe vaak een cijfer voorkomt en SorteerdeMeestVoorkomendeWaarden kan meegegeven worden aan een legebox zodat een legebox die makkelijk kan aflopen.
         private int[] MeestVoorkomendeWaarden, SorteerdeMeestVoorkomendeWaarden;
 
         public Solver(int linesX, int linesY)
@@ -27,6 +33,7 @@ namespace Sudoku
             this.SorteerdeMeestVoorkomendeWaarden = new int[9];
         }
 
+        //In deze methode wordt gecheckt of een textbox leeg is, zo ja voeg het toe aan de legeboxen list. Zo niet, voeg het aan de sudokuBoard array toe.
         public bool fillArrayWithNumbers(TextBox[,] TextBoxArray)
         {
             bool res = true;
@@ -56,7 +63,7 @@ namespace Sudoku
             return res;
         }
 
-
+        //Dit is de methode die de sudoku probeert op te lossen, door elk mogelijke waarde af te gaan en als het niet lukt of de volgende mogelijke waarde te proberen of weer terug te gaan naar de vorige vak.
         public void Oplossen(int teller)
         {
             if (teller == LegeBoxen.Count || teller < 0)
@@ -70,6 +77,7 @@ namespace Sudoku
             }
         }
 
+        //Hierin worden de mogelijke waarden afgelopen.
         public void MogelijkeWaardenAflopen(LegeBox legebox, int teller)
         {
 
@@ -96,6 +104,7 @@ namespace Sudoku
             }
         }
 
+        //Een mogelijke waarde moet voldoen aan de eisen. Geen cijfer in de horizontale of verticale rij en niet in dezelfde 3 bij 3 vak.
         public bool VoldoetAanEisen(int x, int y, int mogelijkewaarde, Point vlak)
         {
             bool res = false;
@@ -106,6 +115,7 @@ namespace Sudoku
             return res;
         }
 
+        //Checkt verticaal of een cijfer al voorkomt.
         private bool CheckVerticaal(int x, int y, int mogelijkewaarde)
         {
             bool res = false;
@@ -123,6 +133,7 @@ namespace Sudoku
             return res;
         }
 
+        //Checkt horizontaal of een cijfer al voorkomt.
         private bool CheckHorizontaal (int x, int y, int mogelijkewaarde)
         {
             bool res = false;
@@ -140,6 +151,7 @@ namespace Sudoku
             return res;
         }
 
+        //Checkt in het vlak of een cijfer al voorkomt.
         private bool CheckVlak (int x, int y, int mogelijkewaarde, Point vlak)
         {
             bool res = false;
@@ -160,6 +172,7 @@ namespace Sudoku
             return res;
         }
 
+        //Bepaalt in welk vak een vakje zit.
         private Point WelkeVlak (int x, int y)
         {
             Point res = new Point();
@@ -168,6 +181,7 @@ namespace Sudoku
             return res;
         }
 
+        //Reset de mogelijkewaarde van de boxen als de teller wordt terug gezet.
         public void ResetMogelijkeWaarde(int teller)
         {
             for (int t = teller; t < LegeBoxen.Count(); t++)
@@ -181,6 +195,7 @@ namespace Sudoku
             }
         }
 
+        //Reset de sudokuboard zodat elke waarde 0 is.
         public void ResetSudokuBoard (int teller)
         {
             for (int t = teller; t < LegeBoxen.Count(); t++)
@@ -190,6 +205,7 @@ namespace Sudoku
             }
         }
 
+        //Garbage collect naar 1000 keer de teller wordt terug gezet.
         private void GarbageCollector ()
         {
             if(garbageteller >= 1000)
@@ -203,6 +219,7 @@ namespace Sudoku
             }
         }
 
+        //Bepaalt de meestvoorkomendewaarde.
         public void MeestVoorkomendeWaarde(TextBox[,] TextBoxArray)
         {
             for (int t = 0; t < 9; t++)
@@ -218,6 +235,7 @@ namespace Sudoku
             MeestVoorkomendeWaardeSorteren();
         }
 
+        //Sorteerde de meestvoorkomendewaarde.
         public void MeestVoorkomendeWaardeSorteren()
         {
             for (int t = 0; t < 9; t++)

@@ -9,29 +9,40 @@ namespace Sudoku
 {
     public class Window : FormMethodes
     {
+        //LinesX aantal vakjes in de x-richting. LinesY aantal vakjes in de y-richting. BoxSize is de grootte van de vakjes. VlakSize is de grootte van de 3 bij 3 vak. TextBoxSize is de grootte van de textbox waar cijfers ingevuld kunnen worden.
         const int LinesX = 9, LinesY = 9, BoxSize = 60, VlakSize = 3 * BoxSize, TextBoxSize = BoxSize - 5;
+        //Een TextBoxArray waarin alle textboxen die nodig zijn voor de sudoku worden opgeslagen.
         public TextBox[,] TextBoxArray = new TextBox[LinesX, LinesY];
+        //Je maakt een object solver aan die de sudoku oplost.
         Solver solver = new Solver(LinesX, LinesY);
+        //De bestandsnaam van een bestand die je opslaat of opent.
         String fileName;
+        //Een stopwatch die bij houdt hoe lang het duurt om een sudoku op te lossen.
         Stopwatch stopwatch = new Stopwatch();
 
         public Window()
         {
+            //Hier worden buttons gemaakt om op te klikken.
             Button Solve = MakenButton("Solve", 600, 10, 80, 30);
             Button Reset = MakenButton("Reset", 600, 50, 80, 30);
             Button Voorbeeld = MakenButton("Voorbeeld", 600, 90, 80, 30);
             Button Open = MakenButton("Open", 600, 130, 80, 30);
             Button Opslaan = MakenButton("Opslaan", 600, 170, 80, 30);
+            //Een panneel gemaakt waar de sudoku bord op weergeven wordt.
             Panel paneel = MakenPanel(10, 10, LinesX * BoxSize + 1, LinesY * BoxSize + 1);
+            //Een methode die de sudoku grid vol loopt met textboxen.
             fillGridWithTextBox(paneel);
 
+            //Specificatie over de window waarin het weergeven wordt.
             this.ClientSize += new Size(500, 500);
             this.Text = "Sudoku Solver";
             this.BackColor = Color.White;
             this.Paint += Teken;
 
+            //De teken eventhandler van de paneel.
             paneel.Paint += TekenPanel;
 
+            //De klik eventhandlers van de buttons.
             Solve.Click += SolveKlik;
             Reset.Click += ResetKlik;
             Voorbeeld.Click += VoorbeeldKlik;
@@ -46,12 +57,14 @@ namespace Sudoku
 
         }
 
+        //De teken eventhandler van de paneel.
         public void TekenPanel(object sender, PaintEventArgs pea)
         {
             this.tekenGrid(pea.Graphics);
             this.tekenDikkeGrid(pea.Graphics);
         }
 
+        //De solve-button eventhandler. Deze roept eerst de methode meestvoorkomendewaarde aan, dan vult hij de sudokuboard array aan met de cijfers die zijn ingevuld, dan wordt de Oplossen-thread aangeroepen en dan wordt de oplossing weergeven.
         public void SolveKlik(object sender, EventArgs ea)
         {
             this.solver.MeestVoorkomendeWaarde(TextBoxArray);
@@ -64,13 +77,15 @@ namespace Sudoku
             }
         }
 
+        //Reset de sudokuboard en textboxarray naar leeg.
         public void ResetKlik(object sender, EventArgs ea)
         {
             Solver solver = new Solver(LinesX, LinesY);
             this.solver = solver;
-            cleanSudokuBoard();
+            cleanTextBoxArray();
         }
 
+        //Vult een voorbeeld sudoku in.
         public void VoorbeeldKlik(object sender, EventArgs ea)
         {
             CijferToevoegenTextBox(0, 1, 5);
@@ -103,6 +118,7 @@ namespace Sudoku
             CijferToevoegenTextBox(8, 7, 8);
         }
 
+        //Opent een sudoku tekst bestand.
         private void OpenKlik(object sender, EventArgs ea)
         {
             OpenFileDialog dialoog = new OpenFileDialog();
@@ -116,6 +132,7 @@ namespace Sudoku
             }
         }
 
+        //Slaat een sudoku op als tekst bestand.
         private void OpslaanKlik(object sender, EventArgs ea)
         {
             SaveFileDialog dialoog = new SaveFileDialog();
@@ -128,6 +145,7 @@ namespace Sudoku
             }
         }
 
+        //Tekent de vakjes.
         public void tekenGrid(Graphics gr)
         {
             Pen pBlack = Pens.Black;
@@ -142,6 +160,7 @@ namespace Sudoku
             }
         }
 
+        //Tekent de 3 bij 3 vakjes.
         public void tekenDikkeGrid(Graphics gr)
         {
             Pen pBlack = new Pen(Brushes.Black, 4);
@@ -156,6 +175,7 @@ namespace Sudoku
             }
         }
 
+        //Voegt de textboxen toe aan de grid.
         public void fillGridWithTextBox(Panel paneel)
         {
             for (int t = 0; t <= LinesX - 1; t++)
@@ -167,6 +187,7 @@ namespace Sudoku
             }
         }
 
+        //Weergeeft de oplossing aan het eind.
         public void tekenSudokuBoard(Solver solver)
         {
             while(solver.thread.IsAlive)
@@ -174,7 +195,10 @@ namespace Sudoku
 
             }
 
+
             stopwatch.Stop();
+            Debug.WriteLine("Time elapsed: {0}", stopwatch.Elapsed);
+            stopwatch.Reset();
 
             for (int t = 0; t <= LinesX - 1; t++)
             {
@@ -186,12 +210,10 @@ namespace Sudoku
                     }
                 }
             }
-
-            Debug.WriteLine("Time elapsed: {0}", stopwatch.Elapsed);
-            stopwatch.Reset();
         }
 
-        public void cleanSudokuBoard()
+        //Leegt de TextBoxArray.
+        public void cleanTextBoxArray()
         {
             for (int t = 0; t <= LinesX - 1; t++)
             {
@@ -202,11 +224,13 @@ namespace Sudoku
             }
         }
 
+        //Wordt gebruikt voor de voorbeeld button om makkelijk cijfers toe te voegen aan de TextBoxArray. 
         private void CijferToevoegenTextBox(int x, int y, int waarde)
         {
             TextBoxArray[x, y].Text = waarde.ToString();
         }
 
+        //Leest het tekstbestand in.
         private void Lees()
         {
             int teller = 0;
@@ -233,6 +257,7 @@ namespace Sudoku
             }
         }
 
+        //Slaat de sudoku op als een tekstbestand.
         private void Schrijven()
         {
             string regel = "";
