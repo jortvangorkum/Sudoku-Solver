@@ -19,8 +19,7 @@ namespace Sudoku
         public Thread thread;
         //Een teller die bijhoudt hoe vaak er wordt gereset.
         int garbageteller;
-        //Twee int arrays. MeestVoorkomendeWaarden heeft geteld hoe vaak een cijfer voorkomt en SorteerdeMeestVoorkomendeWaarden kan meegegeven worden aan een legebox zodat een legebox die makkelijk kan aflopen.
-        private int[] MeestVoorkomendeWaarden, SorteerdeMeestVoorkomendeWaarden;
+        private ICollection<int>[,] CollectieMogelijkeWaarden;
 
         public Solver(int linesX, int linesY)
         {
@@ -29,12 +28,12 @@ namespace Sudoku
             this.LinesY = linesY;
             this.LegeBoxen = new List<LegeBox>();
             this.thread = new Thread(() => Oplossen(0), 1000000000);
-            this.MeestVoorkomendeWaarden = new int[9];
-            this.SorteerdeMeestVoorkomendeWaarden = new int[9];
+            this.CollectieMogelijkeWaarden = new List<int>[linesX, linesY];
+            MogelijkeWaardenCollectionToevoegen();
         }
 
         //In deze methode wordt gecheckt of een textbox leeg is, zo ja voeg het toe aan de legeboxen list. Zo niet, voeg het aan de sudokuBoard array toe.
-        public bool fillArrayWithNumbers(TextBox[,] TextBoxArray)
+        public bool fillsudokuBoardWithNumbers(TextBox[,] TextBoxArray)
         {
             bool res = true;
 
@@ -42,25 +41,36 @@ namespace Sudoku
             {
                 for (int n = 0; n <= LinesY - 1; n++)
                 {
-                    if(TextBoxArray[t, n].Text == "")
+                    if (TextBoxArray[t, n].Text != "")
                     {
-                        LegeBoxen.Add(new LegeBox(t, n, WelkeVlak(t, n), SorteerdeMeestVoorkomendeWaarden.ToList()));
-                    }
-                    else
-                    {
-                        try
-                        {
+                       try
+                       {
                             sudokuBoard[t, n] = Int32.Parse(TextBoxArray[t, n].Text);
-                        }
-                        catch
-                        {
+                       }
+                       catch
+                       {
                             MessageBox.Show("Vul alleen getallen in.");
                             return res = false;
-                        }
+                       }
                     }
                 }
             }
+
             return res;
+        }
+
+        public void legeBoxenToevoegen(TextBox[,] TextBoxArray)
+        {
+            for (int t = 0; t <= LinesX - 1; t++)
+            {
+                for (int n = 0; n <= LinesY - 1; n++)
+                {
+                    if (TextBoxArray[t, n].Text == "")
+                    {
+                        LegeBoxen.Add(new LegeBox(t, n, WelkeVlak(t, n), new List<int>(CollectieMogelijkeWaarden[t, n])));
+                    }
+                }
+            }
         }
 
         //Dit is de methode die de sudoku probeert op te lossen, door elk mogelijke waarde af te gaan en als het niet lukt of de volgende mogelijke waarde te proberen of weer terug te gaan naar de vorige vak.
@@ -187,11 +197,7 @@ namespace Sudoku
             for (int t = teller; t < LegeBoxen.Count(); t++)
             {
                 LegeBoxen[t].MogelijkeWaarden = null;
-                LegeBoxen[t].MogelijkeWaarden = new List<int>();
-                for (int n = 0; n < 9; n++)
-                {
-                    LegeBoxen[t].MogelijkeWaarden.Add(SorteerdeMeestVoorkomendeWaarden[n]);
-                }
+                LegeBoxen[t].MogelijkeWaarden = new List<int>(CollectieMogelijkeWaarden[LegeBoxen[t].X, LegeBoxen[t].Y]);
             }
         }
 
@@ -219,31 +225,34 @@ namespace Sudoku
             }
         }
 
-        //Bepaalt de meestvoorkomendewaarde.
-        public void MeestVoorkomendeWaarde(TextBox[,] TextBoxArray)
+        public void MogelijkeWaardenBepalen(TextBox[,] TextBoxArray)
         {
             for (int t = 0; t < 9; t++)
             {
                 for (int n = 0; n < 9; n++)
                 {
-                    if (TextBoxArray[t, n].Text != "")
+                    if (TextBoxArray[t, n].Text == "")
                     {
-                        MeestVoorkomendeWaarden[int.Parse(TextBoxArray[t, n].Text) - 1] += 1;
+                        for(int a = 1; a <= 9; a++)
+                        {
+                            if (VoldoetAanEisen(t, n, a, WelkeVlak(t, n)))
+                            {
+                                this.CollectieMogelijkeWaarden[t, n].Add(a);
+                            }
+                        }
                     }
                 }
             }
-            MeestVoorkomendeWaardeSorteren();
         }
 
-        //Sorteerde de meestvoorkomendewaarde.
-        public void MeestVoorkomendeWaardeSorteren()
+        public void MogelijkeWaardenCollectionToevoegen()
         {
             for (int t = 0; t < 9; t++)
             {
-                int maxValue = MeestVoorkomendeWaarden.Max();
-                int maxIndex = MeestVoorkomendeWaarden.ToList().IndexOf(maxValue);
-                MeestVoorkomendeWaarden[maxIndex] = -1;
-                this.SorteerdeMeestVoorkomendeWaarden[t] = maxIndex + 1;
+                for (int n = 0; n < 9; n++)
+                {
+                    CollectieMogelijkeWaarden[t, n] = new List<int>();
+                }
             }
         }
     }

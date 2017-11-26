@@ -2,7 +2,6 @@
 using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
-using System.Threading;
 using System.Diagnostics;
 
 namespace Sudoku
@@ -67,10 +66,10 @@ namespace Sudoku
         //De solve-button eventhandler. Deze roept eerst de methode meestvoorkomendewaarde aan, dan vult hij de sudokuboard array aan met de cijfers die zijn ingevuld, dan wordt de Oplossen-thread aangeroepen en dan wordt de oplossing weergeven.
         public void SolveKlik(object sender, EventArgs ea)
         {
-            this.solver.MeestVoorkomendeWaarde(TextBoxArray);
-
-            if (this.solver.fillArrayWithNumbers(TextBoxArray))
+            if (this.solver.fillsudokuBoardWithNumbers(TextBoxArray))
             {
+                this.solver.MogelijkeWaardenBepalen(TextBoxArray);
+                this.solver.legeBoxenToevoegen(TextBoxArray);
                 stopwatch.Start();
                 this.solver.thread.Start();
                 tekenSudokuBoard(this.solver);
