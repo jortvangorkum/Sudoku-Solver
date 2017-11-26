@@ -255,5 +255,14 @@ namespace Sudoku
                 }
             }
         }
+
+        public void LegeBoxenSorteren()
+        {
+            this.LegeBoxen.Sort((x , y) => x.MogelijkeWaarden.Count().CompareTo(y.MogelijkeWaarden.Count()));
+
+            //var GesorteerdeLegeBoxen = from element in LegeBoxen orderby element.MogelijkeWaarden.Count() select element;
+
+            //LegeBoxen = GesorteerdeLegeBoxen.ToList();
+        }
     }
 }

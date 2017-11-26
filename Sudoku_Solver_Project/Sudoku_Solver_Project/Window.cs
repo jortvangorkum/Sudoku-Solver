@@ -70,6 +70,7 @@ namespace Sudoku
             {
                 this.solver.MogelijkeWaardenBepalen(TextBoxArray);
                 this.solver.legeBoxenToevoegen(TextBoxArray);
+                this.solver.LegeBoxenSorteren();
                 stopwatch.Start();
                 this.solver.thread.Start();
                 tekenSudokuBoard(this.solver);
