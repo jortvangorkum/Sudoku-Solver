@@ -182,7 +182,7 @@ namespace Sudoku
             return res;
         }
 
-        //Bepaalt in welk vak een vakje zit.
+        //Bepaalt in welk vlak een vakje zit.
         private Point WelkeVlak (int x, int y)
         {
             Point res = new Point();
@@ -258,11 +258,10 @@ namespace Sudoku
 
         public void LegeBoxenSorteren()
         {
-            this.LegeBoxen.Sort((x , y) => x.MogelijkeWaarden.Count().CompareTo(y.MogelijkeWaarden.Count()));
+            List<LegeBox> SorteerdeLegeBoxen = new List<LegeBox>();
 
-            //var GesorteerdeLegeBoxen = from element in LegeBoxen orderby element.MogelijkeWaarden.Count() select element;
-
-            //LegeBoxen = GesorteerdeLegeBoxen.ToList();
+            SorteerdeLegeBoxen = this.LegeBoxen.OrderBy(legebox => legebox.MogelijkeWaarden.Count()).ThenBy(legebox => legebox.X).ThenBy(legebox => legebox.Y).ToList();
+            LegeBoxen = SorteerdeLegeBoxen;
         }
     }
 }

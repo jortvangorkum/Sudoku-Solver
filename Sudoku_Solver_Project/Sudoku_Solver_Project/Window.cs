@@ -190,11 +190,10 @@ namespace Sudoku
         //Weergeeft de oplossing aan het eind.
         public void tekenSudokuBoard(Solver solver)
         {
-            while(solver.thread.IsAlive)
+            while(solver.thread.ThreadState == System.Threading.ThreadState.Running)
             {
 
             }
-
 
             stopwatch.Stop();
             Debug.WriteLine("Time elapsed: {0}", stopwatch.Elapsed);
