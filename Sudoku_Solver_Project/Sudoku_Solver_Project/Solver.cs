@@ -29,7 +29,7 @@ namespace Sudoku
             this.LegeBoxen = new List<LegeBox>();
             this.thread = new Thread(() => Oplossen(0), 1000000000);
             this.CollectieMogelijkeWaarden = new List<int>[linesX, linesY];
-            MogelijkeWaardenCollectionToevoegen();
+            MogelijkeWaardenCollectieToevoegen();
         }
 
         //In deze methode wordt gecheckt of een textbox leeg is, zo ja voeg het toe aan de legeboxen list. Zo niet, voeg het aan de sudokuBoard array toe.
@@ -82,7 +82,7 @@ namespace Sudoku
             }
             else
             {
-                LegeBox legebox = LegeBoxen[teller];
+                LegeBox legebox = new LegeBox(LegeBoxen[teller]);
                 MogelijkeWaardenAflopen(legebox, teller);
             }
         }
@@ -245,7 +245,7 @@ namespace Sudoku
             }
         }
 
-        public void MogelijkeWaardenCollectionToevoegen()
+        public void MogelijkeWaardenCollectieToevoegen()
         {
             for (int t = 0; t < 9; t++)
             {
@@ -258,10 +258,22 @@ namespace Sudoku
 
         public void LegeBoxenSorteren()
         {
-            List<LegeBox> SorteerdeLegeBoxen = new List<LegeBox>();
+            for (int n = 0; n < LegeBoxen.Count() - 1; n++)
+            {
+                int kleinste = n;
 
-            SorteerdeLegeBoxen = this.LegeBoxen.OrderBy(legebox => legebox.MogelijkeWaarden.Count()).ThenBy(legebox => legebox.X).ThenBy(legebox => legebox.Y).ToList();
-            LegeBoxen = SorteerdeLegeBoxen;
+                for (int t = n + 1; t < LegeBoxen.Count(); t++)
+                {
+
+                    if (LegeBoxen[t].MogelijkeWaarden.Count() < LegeBoxen[kleinste].MogelijkeWaarden.Count())
+                    {
+                        kleinste = t;
+                    }
+                }
+                LegeBox kleinsteLegeBox = new LegeBox(LegeBoxen[kleinste]);
+                LegeBoxen.Remove(LegeBoxen[kleinste]);
+                LegeBoxen.Insert(n, kleinsteLegeBox);
+            }
         }
     }
 }

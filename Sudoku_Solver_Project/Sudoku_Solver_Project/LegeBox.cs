@@ -15,7 +15,15 @@ namespace Sudoku
             this.X = x;
             this.Y = y;
             this.Vlak = vlak;
-            MogelijkeWaarden = mogelijkewaarden;
+            this.MogelijkeWaarden = mogelijkewaarden;
+        }
+
+        public LegeBox (LegeBox legebox)
+        {
+            this.X = legebox.X;
+            this.Y = legebox.Y;
+            this.Vlak = legebox.Vlak;
+            this.MogelijkeWaarden = legebox.MogelijkeWaarden;
         }
     }
 }
